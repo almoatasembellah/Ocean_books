@@ -65,7 +65,7 @@ class BookController extends Controller
     {
         $book = Book::findOrFail($id);
         $data = $request->validated();
-        $book->update($request->validated());
+        $book->update($data);
         return $this->sendResponse([], "Book updated successfully");
     }
 
@@ -101,11 +101,6 @@ class BookController extends Controller
         return response()->download(storage_path('app/public/' . $book->pdf_path), $book->title . '.pdf');
     }
 
-//    public function serialCheck(Request $request)
-//        {
-//            $checkins = Checkin::whereDate('created_at', Carbon::today())->get();
-//
-//    }
 
     public function destroy($id)
     {

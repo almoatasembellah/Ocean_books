@@ -18,7 +18,7 @@ class Book extends Model
         'serial_code'
     ];
 
-    public function images()
+    public function images(): HasMany
     {
         return $this->hasMany(BookImage::class);
     }
@@ -26,5 +26,10 @@ class Book extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class , 'book_categories' , 'book_id' , 'category_id');
+    }
+
+    public function serials(): HasMany
+    {
+        return $this->hasMany(Serial::class);
     }
 }
