@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookRequest;
+use App\Http\Resources\BookResource;
 use App\Http\Traits\HandleApi;
 use App\Models\Book;
 use App\Models\BookCategory;
 use App\Models\BookImage;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class BookController extends Controller
 {
@@ -17,7 +20,7 @@ class BookController extends Controller
 
     public function index()
     {
-        return self::sendResponse(Book::all(), 'All Books are fetched');
+        return self::sendResponse(BookResource::collection(Book::paginate(25)), 'All Books are fetched');
     }
 
     public function store(BookRequest $request)
@@ -30,8 +33,8 @@ class BookController extends Controller
         $data['serial_code'] = \Str::uuid();
         $book = Book::create($data);
 
-        if ($data['categories']) {
-            foreach ($data['categories'] as $category) {
+        if ($request->has('categories')) {
+            foreach ($request->get('categories') as $category) {
                 BookCategory::create([
                     'category_id' => $category,
                     'book_id' => $book->id
@@ -39,8 +42,8 @@ class BookController extends Controller
             }
         }
 
-        if ($data['images']) {
-            foreach ($data['images'] as $image) {
+        if ($request->has('images')) {
+            foreach ($request->file('images') as $image) {
                 $imagePath = $image->store('book-images', 'public');
                 BookImage::create([
                     'path' => $imagePath,
@@ -53,75 +56,60 @@ class BookController extends Controller
 
     public function show(string $id)
     {
-        return self::sendResponse([
-            'book' => Book::findOrFail($id)->first(),
-            'images' => Book::findOrFail($id)->images
-        ], 'Book data is fetched successfully');
+        $book = Book::findOrFail($id);
+        return $this->sendResponse(BookResource::make($book), 'Book data is fetched successfully');
     }
 
 
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
+    public function update(BookRequest $request, $id)
     {
         $book = Book::findOrFail($id);
         $data = $request->validated();
-        $book->update($data);
-        return response()->json(['message' => 'Book updated successfully']);
+        $book->update($request->validated());
+        return $this->sendResponse([], "Book updated successfully");
     }
 
 
-
-    public function download(Request $request, Book $book)
+    public function download(Request $request)
     {
-        $isTeacherResource = $request->is('api/subcategories/*/books/download');
+        $book = Book::findOrFail($request->get('book_id'));
+        $isTeacher = $book->categories()->whereBookHeaderId(4)->exists();
+        if ($isTeacher) {
+            $this->validate(request(), [
+                'serial_code' => 'required|string',
+            ]);
 
-        if ($isTeacherResource) {
-            $serialCode = $request->input('serial_code');
+            $serialCode = request('serial_code');
 
-            if ($serialCode === $book->serial_code) {
-                return response()->json([
-                    'download_link' => $book->pdf_path
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Invalid serial code.'
-                ], 403);
+            if ($serialCode !== $book->serial_code) {
+                return response()->json(['error' => 'Invalid serial code'], 403);
             }
         } else {
-            $phone = $request->input('phone');
-            $studentForm = TeacherForm::where('phone', $phone)->first();
+            $this->validate(request(), [
+                'name' => 'required|string',
+                'email' => 'required|email',
+                'phone' => 'required|string',
+                'position' => 'required|string',
+            ]);
 
-            if ($studentForm) {
-                return response()->json([
-                    'download_link' => $book->pdf_path
-                ]);
-            } else {
-                $validatedData = $request->validate([
-                    'name' => 'required',
-                    'email' => 'required|email',
-                    'phone' => 'required',
-                    'position' => 'required',
-                ]);
+            $phone = request('phone');
 
-                $studentForm = TeacherForm::create($validatedData);
-
-                return response()->json([
-                    'message' => 'Please fill out the form.',
-                    'form_id' => $studentForm->id
-                ]);
+            if (!User::where('phone', $phone)->exists()) {
+                User::create(request()->only(['name', 'email', 'phone', 'position']));
             }
         }
+        return response()->download(storage_path('app/public/' . $book->pdf_path), $book->title . '.pdf');
     }
 
-    public function destroy(string $id)
-    {
+//    public function serialCheck(Request $request)
+//        {
+//            $checkins = Checkin::whereDate('created_at', Carbon::today())->get();
+//
+//    }
 
+    public function destroy($id)
+    {
+         Book::findOrFail($id)->delete();
+        return $this->Sendresponse([], 'Book has been deleted successfully');
     }
 }

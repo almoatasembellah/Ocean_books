@@ -14,6 +14,7 @@ use Throwable;
 class Handler extends ExceptionHandler
 {
     use HandleApi;
+
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
      *
@@ -32,20 +33,19 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e): Response|JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($e instanceof ModelNotFoundException) {
-            return $this->sendError('Model is not found' , $e->getModel() . ' is not found');
+            $model = explode('\\' , $e->getModel())[2];
+            return $this->sendError('Model is not found',  $model . ' is not found');
         }
-
 
         if ($e instanceof ValidationException) {
             $error = $e->validator->errors()->first();
-
-            return $this->sendError('ValidationException',$error);
+            return $this->sendError('ValidationException', $error);
         }
 
-        if ($e instanceof QueryException){
-            return $this->sendError('QueryException',$e->getMessage());
+        if ($e instanceof QueryException) {
+            return $this->sendError('QueryException', $e->getMessage());
         }
 
-        return $this->sendError('Server Error' , 'Internal Server Error');
+        return $this->sendError('Server Error', $e->getMessage() . " at line " . $e->getLine());
     }
 }

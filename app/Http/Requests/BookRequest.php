@@ -19,8 +19,8 @@ class BookRequest extends FormRequest
             'video_url' => 'required|url',
             'categories' => ['required' , 'array'],
             'categories.*' => ['required' , Rule::exists('categories' , 'id')],
-            'images' => ['nullable' , 'array'],
-            'images.*' => 'nullable|image|mimes:png,gif,jpg,jpeg|max:2048'
+            'images' => ['bail','nullable' , 'array'],
+            'images.*' => 'bail|nullable|image|mimes:png,gif,jpg,jpeg|max:2048',
         ];
     }
     public function authorize(): bool
