@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('serials', function (Blueprint $table) {
             $table->id();
-            $table->string('serial_code');
+            $table->string('material_code');
             $table->tinyInteger('is_expired');
             $table->foreignId('book_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

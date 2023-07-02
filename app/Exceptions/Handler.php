@@ -46,6 +46,6 @@ class Handler extends ExceptionHandler
             return $this->sendError('QueryException', $e->getMessage());
         }
 
-        return $this->sendError('Server Error', $e->getMessage() . " at line " . $e->getLine() . " at file: " .$e->getFile());
+        return $this->sendError('Server Error', $e->getMessage());
     }
 }

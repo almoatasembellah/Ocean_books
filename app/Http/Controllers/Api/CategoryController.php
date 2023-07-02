@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Http\Traits\HandleApi;
 use App\Models\Category;
 use File;
@@ -14,7 +15,8 @@ class CategoryController extends Controller
 
     public function index()
     {
-        return self::sendResponse(Category::all(), 'All Categories are fetched');
+
+        return self::sendResponse(CategoryResource::collection(Category::paginate(25)), 'All Categories are fetched');
 
     }
 
