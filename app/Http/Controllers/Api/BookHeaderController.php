@@ -13,7 +13,7 @@ class BookHeaderController extends Controller
 
     public function index()
     {
-        return self::sendResponse(BookHeader::select(['id', 'title'])->get() , 'All Book headers are fetched');
+        return self::sendResponse(BookHeader::select(['id', 'title'])->get(), 'All Book headers are fetched');
     }
 
 

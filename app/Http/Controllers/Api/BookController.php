@@ -6,13 +6,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookRequest;
 use App\Http\Resources\BookResource;
+use App\Http\Resources\SerialResource;
 use App\Http\Traits\HandleApi;
 use App\Models\Book;
 use App\Models\BookCategory;
 use App\Models\BookImage;
+use App\Models\Serial;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class BookController extends Controller
 {
@@ -73,18 +74,9 @@ class BookController extends Controller
     public function download(Request $request)
     {
         $book = Book::findOrFail($request->get('book_id'));
+        $check = Serial::where('material_code', $request->input('material_code'))->firstOrFail();
         $isTeacher = $book->categories()->whereBookHeaderId(4)->exists();
         if ($isTeacher) {
-            $this->validate(request(), [
-                'serial_code' => 'required|string',
-            ]);
-
-            $serialCode = request('serial_code');
-
-            if ($serialCode !== $book->serial_code) {
-                return response()->json(['error' => 'Invalid serial code'], 403);
-            }
-        } else {
             $this->validate(request(), [
                 'name' => 'required|string',
                 'email' => 'required|email',
@@ -97,9 +89,60 @@ class BookController extends Controller
             if (!User::where('phone', $phone)->exists()) {
                 User::create(request()->only(['name', 'email', 'phone', 'position']));
             }
+        } else {
+            $this->validate(request(), [
+                'material_code' => 'required|string',
+            ]);
+
+            $serialCode = request('material_code');
+
+            if ($serialCode !== $check->material_code) {
+                return response()->json(['error' => 'Invalid serial code'], 403);
+            }
         }
         return response()->download(storage_path('app/public/' . $book->pdf_path), $book->title . '.pdf');
     }
+
+    public function generateSerialCodes(Request $request)
+    {
+        $bookId = $request->input('book_id');
+        $quantity = $request->input('quantity');
+//        $book = Book::findOrFail($bookId);
+        $serialCodes = [];
+
+        for ($i = 0; $i < $quantity; $i++) {
+            $serialCode = $this->generateUniqueSerialCode();
+
+            // Associate serial code with the book
+            $serialCodes[] = [
+                'book_id' => $bookId,
+                'material_code' => $serialCode
+            ];
+        }
+
+        // Insert serial codes into the database
+        Serial::insert($serialCodes);
+
+        // Return the generated serial codes
+        return response()->json($serialCodes);
+    }
+
+    private function generateUniqueSerialCode()
+    {
+        do {
+//            $serialCode = Str::random(10);
+            $serialCode = random_int(100000000,999999999);
+        } while (Serial::where('material_code', $serialCode)->exists());
+        return $serialCode;
+    }
+
+    public function generatedCodes(request $request)
+    {
+//      return self::sendResponse(BookResource::collection(Book::paginate(25)), 'All Books are fetched');
+        return self::sendResponse(SerialResource::collection(Serial::paginate(25)),'all Serials are fetched.');
+    }
+
+
 
 
     public function destroy($id)

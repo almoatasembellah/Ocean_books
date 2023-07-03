@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class serial extends Model
+class Serial extends Model
 {
     protected $fillable = [
-        'generated_serial',
+        'material_code',
         'is_expired',
         'book_id'
     ];

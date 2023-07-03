@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('serials', function (Blueprint $table) {
             $table->id();
             $table->string('material_code');
-            $table->tinyInteger('is_expired');
-            $table->foreignId('book_id')->constrained()->cascadeOnDelete();
+            $table->tinyInteger('is_expired')->default(0);
+            $table->foreignId('book_id')->constrained('books')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -11,6 +11,8 @@ Route::resource('book-headers', BookHeaderController::class);
 Route::resource('categories', CategoryController::class);
 Route::resource('books', BookController::class);
 Route::post('download-book', [BookController::class , 'download']);
+Route::post('generate-serial', [BookController::class, 'generateSerialCodes']);
+Route::get('generated', [BookController::class, 'generatedCodes']);
 
 
 //web controller

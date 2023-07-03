@@ -28,8 +28,8 @@ class Book extends Model
         return $this->belongsToMany(Category::class , 'book_categories' , 'book_id' , 'category_id');
     }
 
-    public function serials(): HasMany
+    public function serialCodes()
     {
-        return $this->hasMany(Serial::class);
+        return $this->hasMany(Serial::class, 'material_code', 'serial_code');
     }
 }
