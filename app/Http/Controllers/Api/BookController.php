@@ -13,6 +13,7 @@ use App\Models\BookCategory;
 use App\Models\BookImage;
 use App\Models\Serial;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -71,10 +72,9 @@ class BookController extends Controller
     }
 
 
-    public function download(Request $request)
+    public function downloadBook(Request $request)
     {
         $book = Book::findOrFail($request->get('book_id'));
-        $check = Serial::where('material_code', $request->input('material_code'))->firstOrFail();
         $isTeacher = $book->categories()->whereBookHeaderId(4)->exists();
         if ($isTeacher) {
             $this->validate(request(), [
@@ -89,7 +89,10 @@ class BookController extends Controller
             if (!User::where('phone', $phone)->exists()) {
                 User::create(request()->only(['name', 'email', 'phone', 'position']));
             }
-        } else {
+        }
+
+        else {
+            $check = Serial::where('material_code', $request->input('material_code'))->firstOrFail();
             $this->validate(request(), [
                 'material_code' => 'required|string',
             ]);
@@ -97,12 +100,60 @@ class BookController extends Controller
             $serialCode = request('material_code');
 
             if ($serialCode !== $check->material_code) {
-                return response()->json(['error' => 'Invalid serial code'], 403);
+
+                return $this->sendError('Serial Error','Invalid Serial Code, Try another one.');
+
             }
         }
         return response()->download(storage_path('app/public/' . $book->pdf_path), $book->title . '.pdf');
     }
 
+    public function downloadVideo(Request $request, $id)
+    {
+        $book = Book::findOrFail($id);
+        $check = Serial::where('material_code', $request->input('material_code'))->firstOrFail();
+
+        $this->validate($request, [
+            'material_code' => 'required|string',
+        ]);
+
+        $materialCode = $request->input('material_code');
+
+        if ($materialCode !== $check->material_code) {
+            return $this->sendError('Serial Error', 'Invalid Serial Code, please try again.');
+        }
+
+        return $this->sendResponse(['video_url' => $book->video_url], 'URL is ready!');
+    }
+
+
+            ////////////////// The Same Material Code Opens All Videos And Books///////////////////////////////////
+
+
+
+//    public function downloadVideo(Request $request){
+//
+//        $book = Book::findOrFail($request->get('book_id'));
+//        $check = Serial::where('material_code', $request->input('material_code'))->firstOrFail();
+//        $this->validate(request(), [
+//            'material_code' => 'required|string',
+//        ]);
+//
+//        $materialCode = request('material_code');
+//
+//        if ($materialCode !== $check->material_code) {
+//
+//            return $this->sendError('Serial Error','Invalid Serial Code, Try another one.');
+//
+//        }
+//        return $this->sendResponse(['Video URL' => $book->video_url], 'URL is ready!!');
+//    }
+
+    /**
+     * @throws Exception
+     */
+
+    //Serial Code Generation and Fetching them
     public function generateSerialCodes(Request $request)
     {
         $bookId = $request->input('book_id');
@@ -127,6 +178,9 @@ class BookController extends Controller
         return response()->json($serialCodes);
     }
 
+    /**
+     * @throws Exception
+     */
     private function generateUniqueSerialCode()
     {
         do {
@@ -136,9 +190,8 @@ class BookController extends Controller
         return $serialCode;
     }
 
-    public function generatedCodes(request $request)
+    public function generatedCodes()
     {
-//      return self::sendResponse(BookResource::collection(Book::paginate(25)), 'All Books are fetched');
         return self::sendResponse(SerialResource::collection(Serial::paginate(25)),'all Serials are fetched.');
     }
 
