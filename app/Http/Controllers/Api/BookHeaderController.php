@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookHeaderRequest;
 use App\Http\Traits\HandleApi;
 use App\Models\BookHeader;
+use Illuminate\Support\Facades\Request;
 
 class BookHeaderController extends Controller
 {
@@ -23,10 +24,10 @@ class BookHeaderController extends Controller
         return self::sendResponse([] , 'Header is added successfully');
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return self::sendResponse(BookHeader::findOrFail($id)->first('title') , 'Book headers is fetched');
-
+        $header = BookHeader::findOrFail($id);
+        return self::sendResponse([$header->title], 'Requested book header is fetched');
     }
 
     public function update(BookHeaderRequest $request, $id)
@@ -40,6 +41,6 @@ class BookHeaderController extends Controller
     {
         $header = BookHeader::findOrFail($id);
         $header->delete();
-        return self::sendResponse([] , 'Header is deleted successfully');
+        return self::sendResponse([], 'Header is deleted successfully');
     }
 }
