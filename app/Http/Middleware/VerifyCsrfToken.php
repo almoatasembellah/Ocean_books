@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'book-header-delete/{id}', // Replace '*' with the specific route ID pattern if necessary
     ];
 }
