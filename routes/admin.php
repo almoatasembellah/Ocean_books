@@ -10,9 +10,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/admin/login', [AdminController::class, 'login']);
 Route::middleware('cors')->group(function () {
 
-
 //General Routes
-Route::resource('book-headers', BookHeaderController::class);//->middleware('admin')->except(['index','show']);
+Route::resource('book-headers', BookHeaderController::class)->except(['destroy']);
 //Route::get('/get-book-headers', [BookHeaderController::class, 'index'])->name('book-headers');
 Route::resource('categories', CategoryController::class);
 Route::resource('books', BookController::class);//->middleware('admin')->except(['downloadBook','downloadVideo']);
