@@ -19,8 +19,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 //ADMIN Login
+
 Route::post('/admin/login', [AdminController::class, 'login']);
-Route::middleware('cors')->group(function () {
+Route::middleware('api')->group(function () {
 
 //General Routes
     Route::delete('/book-header-delete/{id}', [BookHeaderController::class, 'destroy']);
