@@ -41,6 +41,6 @@ class BookHeaderController extends Controller
     {
         $header = BookHeader::findOrFail($id);
         $header->delete();
-        return self::sendResponse([], 'Header is deleted successfully');
+        return self::sendResponse([] , 'Header is deleted successfully');
     }
 }

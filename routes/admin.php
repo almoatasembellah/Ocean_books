@@ -11,7 +11,8 @@ Route::post('/admin/login', [AdminController::class, 'login']);
 Route::middleware('cors')->group(function () {
 
 //General Routes
-Route::resource('book-headers', BookHeaderController::class)->except(['destroy']);
+Route::delete('/book-header-delete/{id}', [BookHeaderController::class, 'destroy']);
+Route::resource('book-headers', BookHeaderController::class);
 //Route::get('/get-book-headers', [BookHeaderController::class, 'index'])->name('book-headers');
 Route::resource('categories', CategoryController::class);
 Route::resource('books', BookController::class);//->middleware('admin')->except(['downloadBook','downloadVideo']);
