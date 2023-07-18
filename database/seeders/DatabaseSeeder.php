@@ -10,6 +10,6 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        $this->call([BookHeadersSeeder::class , AdminSeeder::class]);
+        $this->call([BookHeadersSeeder::class , AdminSeeder::class, CategorySeeder::class]);
     }
 }

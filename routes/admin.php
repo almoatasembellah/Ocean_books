@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 
 //ADMIN Login
 Route::post('/admin/login', [AdminController::class, 'login']);
+Route::middleware('cors')->group(function () {
+
 
 //General Routes
 Route::resource('book-headers', BookHeaderController::class);//->middleware('admin')->except(['index','show']);
@@ -25,3 +27,4 @@ Route::post('download-video/{id}', [BookController::class , 'downloadVideo']);
 Route::post('generate-serial', [BookController::class, 'generateSerialCodes']);
 Route::get('generated', [BookController::class, 'generatedCodes']);
 
+});
