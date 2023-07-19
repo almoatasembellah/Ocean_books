@@ -24,7 +24,7 @@ Route::post('/admin/login', [AdminController::class, 'login']);
 Route::middleware('api')->group(function () {
 
 //General Routes
-    Route::delete('/book-header-delete/{id}', [BookHeaderController::class, 'destroy']);
+    Route::post('/book-header-delete/{id}', [BookHeaderController::class, 'destroy']);
     Route::resource('book-headers', BookHeaderController::class);
 //Route::get('/get-book-headers', [BookHeaderController::class, 'index'])->name('book-headers');
     Route::resource('categories', CategoryController::class);
