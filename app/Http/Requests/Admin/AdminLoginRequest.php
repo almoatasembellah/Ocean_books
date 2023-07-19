@@ -16,7 +16,7 @@ class AdminLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email', Rule::exists('admins','email')],
+            'email' => ['required', 'email', Rule::exists('users','email')],
 
             'password' => ['required', 'min:8'],
         ];

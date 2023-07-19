@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('cover_image');
             $table->string('pdf_path')->nullable();
             $table->string('video_url')->nullable();
-            $table->string('serial_code');
+//            $table->string('serial_code');
             $table->timestamps();
         });
     }

@@ -1,10 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\BookHeaderController;
 use App\Http\Controllers\Api\CategoryController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,16 +18,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 //ADMIN Login
+Route::post('admin/login', [AdminController::class, 'login'])->name('login');
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
-Route::post('/admin/login', [AdminController::class, 'login']);
-Route::middleware('api')->group(function () {
+//BookHeaders Routes
+    Route::middleware('role:admin')->group(function () {
 
-//General Routes
     Route::post('/book-header-delete/{id}', [BookHeaderController::class, 'destroy']);
     Route::resource('book-headers', BookHeaderController::class);
 //Route::get('/get-book-headers', [BookHeaderController::class, 'index'])->name('book-headers');
     Route::resource('categories', CategoryController::class);
-    Route::resource('books', BookController::class);//->middleware('admin')->except(['downloadBook','downloadVideo']);
+    Route::resource('books', BookController::class);
+    });
 
 
 //Download Routes

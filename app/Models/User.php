@@ -5,25 +5,19 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens;
+    use HasApiTokens, HasRoles;
+
     protected $fillable = [
         'name',
         'email',
+        'password',
         'phone',
         'position',
-        'is_admin',
     ];
 
-    public function is_admin()
-    {
-        return $this->is_admin;
-    }
-
-    public function tokens()
-    {
-        return $this->hasMany(PersonalAccessToken::class);
-    }
 }
