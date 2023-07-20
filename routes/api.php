@@ -19,6 +19,14 @@ use Illuminate\Support\Facades\Route;
 
 //ADMIN Login
 Route::post('admin/login', [AdminController::class, 'login'])->name('login');
+
+
+//User Routes
+//Route::middleware('auth:sanctum')->group(function () {
+//    Route::get('user/book-header',[BookHeaderController::class, 'index']);
+//});
+
+//Admin routes
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
 //BookHeaders Routes

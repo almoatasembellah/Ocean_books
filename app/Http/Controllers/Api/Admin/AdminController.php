@@ -29,10 +29,18 @@ class AdminController extends Controller
 
 
             } else {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return $this->sendError('Error', 'Unauthorized pal');
             }
         } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return $this->sendError('error' , 'Unauthorized');
         }
     }
+
+    public function logout()
+    {
+        $user = Auth::user();
+        $user->tokens()->delete();
+        return $this->sendResponse([], 'You have been logged out successfully.');
+    }
+
 }
