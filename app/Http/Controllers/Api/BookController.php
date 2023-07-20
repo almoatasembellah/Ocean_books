@@ -22,7 +22,10 @@ class BookController extends Controller
 
     public function index()
     {
-        return self::sendResponse(BookResource::collection(Book::paginate(25)), 'All Books are fetched');
+        $user = request()->user();
+        if ($user->hasRole('admin')) {
+            return self::sendResponse(BookResource::collection(Book::paginate(25)), 'All Books are fetched');
+        }
     }
 
     public function store(BookRequest $request)

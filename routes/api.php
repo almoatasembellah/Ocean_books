@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//ADMIN Login
+//ADMIN Auth
 Route::post('admin/login', [AdminController::class, 'login'])->name('login');
+Route::post('admin/logout', [AdminController::class, 'adminLogout'])->middleware('auth:sanctum')->name('logout');
 
 
 //User Routes
@@ -27,7 +28,7 @@ Route::post('admin/login', [AdminController::class, 'login'])->name('login');
 //});
 
 //Admin routes
-Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
 
 //BookHeaders Routes
     Route::middleware('role:admin')->group(function () {
