@@ -15,7 +15,7 @@ class Book extends Model
         'cover_image',
         'pdf_path',
         'video_url',
-        'serial_code'
+//        'serial_code'
     ];
 
     public function images(): HasMany
