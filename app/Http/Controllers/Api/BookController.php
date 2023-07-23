@@ -33,11 +33,6 @@ class BookController extends Controller
     {
         $data = $request->validated();
 
-
-        if (!isset($data['category_id'])) {
-            return self::sendError('Category ID is missing in the request.', [], 400);
-        }
-
         $category = Category::find($data['category_id']);
 
         if (!$category) {
