@@ -29,6 +29,12 @@ class BookController extends Controller
         }
     }
 
+    //books for user
+    public function getBooks()
+    {
+        return self::sendResponse(BookResource::collection(Book::paginate(25)),'Books Are here for user');
+    }
+
     public function store(BookRequest $request)
     {
         $data = $request->validated();

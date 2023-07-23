@@ -24,7 +24,7 @@ class BookHeaderController extends Controller
         return self::sendResponse([] , 'Header is added successfully');
     }
 
-    public function show(Request $request, $id)
+    public function show($id)
     {
         $header = BookHeader::findOrFail($id);
         return self::sendResponse([$header->title], 'Requested book header is fetched');

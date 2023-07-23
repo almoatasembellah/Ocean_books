@@ -23,27 +23,24 @@ Route::post('admin/logout', [AdminController::class, 'adminLogout'])->middleware
 
 
 //User Routes
-//Route::middleware('auth:sanctum')->group(function () {
-//    Route::get('user/book-header',[BookHeaderController::class, 'index']);
-//});
+Route::get('/get-all-book-header',[BookHeaderController::class, 'index']);
+Route::get('/get-all-categories',[CategoryController::class, 'index']);
+Route::get('/get-all-books',[BookController::class, 'getBooks']);
 
-//Admin routes
+//Download Routes
+Route::post('download-book', [BookController::class , 'downloadBook']);
+Route::post('download-video/{id}', [BookController::class , 'downloadVideo']);
+
+
 Route::middleware(['auth:sanctum'])->group(function () {
-
 //BookHeaders Routes
     Route::middleware('role:admin')->group(function () {
 
     Route::post('/book-header-delete/{id}', [BookHeaderController::class, 'destroy']);
     Route::resource('book-headers', BookHeaderController::class);
-//Route::get('/get-book-headers', [BookHeaderController::class, 'index'])->name('book-headers');
     Route::resource('categories', CategoryController::class);
     Route::resource('books', BookController::class);
     });
-
-
-//Download Routes
-    Route::post('download-book', [BookController::class , 'downloadBook']);
-    Route::post('download-video/{id}', [BookController::class , 'downloadVideo']);
 
 
 //Serial Code Routes
