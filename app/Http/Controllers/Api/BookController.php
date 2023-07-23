@@ -33,30 +33,32 @@ class BookController extends Controller
     {
         $data = $request->validated();
 
-        //'category_id' key exists in the data
+        // 'categories' key exists in the data
         if (!isset($data['categories'])) {
             return self::sendError('Categories are missing in the request.', [], 400);
         }
 
-        $category = Category::find($data['category_id']);
+        $category = Category::find($data['categories']);
 
         if (!$category) {
             return self::sendError('Category not found.', [], 404);
         }
 
+        // Store the files
         $pdfPath = $request->file('pdf')->store('book-pdfs', 'public');
         $coverPath = $request->file('cover_image')->store('book-covers', 'public');
         $data['pdf_path'] = $pdfPath;
         $data['cover_image'] = $coverPath;
         $data['serial_code'] = \Str::uuid();
 
-        unset($data['categories']);
         $book = Book::create($data);
 
+        // Now, create the BookCategory record using the existing category_id
         BookCategory::create([
             'category_id' => $category->id,
             'book_id' => $book->id
         ]);
+
 
         if ($request->has('images')) {
             foreach ($request->file('images') as $image) {
