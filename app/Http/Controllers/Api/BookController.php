@@ -33,7 +33,7 @@ class BookController extends Controller
     {
         $data = $request->validated();
 
-        $category = Category::find($data['category_id']);
+        $category = Category::find($data['categories']);
 
         if (!$category) {
             return self::sendError('Category not found.', [], 404);
