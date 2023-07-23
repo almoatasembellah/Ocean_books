@@ -11,6 +11,7 @@ use App\Http\Traits\HandleApi;
 use App\Models\Book;
 use App\Models\BookCategory;
 use App\Models\BookImage;
+use App\Models\Category;
 use App\Models\Serial;
 use App\Models\User;
 use Exception;
@@ -31,21 +32,31 @@ class BookController extends Controller
     public function store(BookRequest $request)
     {
         $data = $request->validated();
+
+        //'category_id' key exists in the data
+        if (!isset($data['categories'])) {
+            return self::sendError('Categories are missing in the request.', [], 400);
+        }
+
+        $category = Category::find($data['category_id']);
+
+        if (!$category) {
+            return self::sendError('Category not found.', [], 404);
+        }
+
         $pdfPath = $request->file('pdf')->store('book-pdfs', 'public');
         $coverPath = $request->file('cover_image')->store('book-covers', 'public');
         $data['pdf_path'] = $pdfPath;
         $data['cover_image'] = $coverPath;
         $data['serial_code'] = \Str::uuid();
+
+        unset($data['categories']);
         $book = Book::create($data);
 
-        if ($request->has('categories')) {
-            foreach ($request->get('categories') as $category) {
-                BookCategory::create([
-                    'category_id' => $category,
-                    'book_id' => $book->id
-                ]);
-            }
-        }
+        BookCategory::create([
+            'category_id' => $category->id,
+            'book_id' => $book->id
+        ]);
 
         if ($request->has('images')) {
             foreach ($request->file('images') as $image) {

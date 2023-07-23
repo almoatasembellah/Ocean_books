@@ -23,13 +23,17 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request)
     {
         $data = $request->validated();
-        if ($request->file('cover')) {
-            $coverPath = $request->file('cover')->store('categories-covers', 'public');
-            $data['cover'] = $coverPath;
+
+        if ($request->hasFile('cover')) {
+            $coverPath = $request->file('cover')->store('categories_covers', 'public');
+            $data['cover'] = asset('storage/' . $coverPath); // Get the full URL for the image
         }
-        Category::create($data);
-        return self::sendResponse([], 'Category added successfully');
+
+        $category = Category::create($data);
+
+        return self::sendResponse($category, 'Category added successfully');
     }
+
 
     public function show($id)
     {

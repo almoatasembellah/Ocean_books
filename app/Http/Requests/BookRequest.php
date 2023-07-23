@@ -17,8 +17,9 @@ class BookRequest extends FormRequest
             'cover_image' => 'required|mimes:png,gif,jpg,jpeg|max:2048',
             'pdf' => 'required|mimes:pdf',
             'video_url' => 'required|url',
-            'categories' => ['required' , 'array'],
-            'categories.*' => ['required' , Rule::exists('categories' , 'id')],
+            'categories' => 'required',
+//            'categories' => ['required' , 'array'],
+//            'categories.*' => ['required' , Rule::exists('categories' , 'id')],
             'images' => ['bail','nullable' , 'array'],
             'images.*' => 'bail|nullable|image|mimes:png,gif,jpg,jpeg|max:2048',
         ];
