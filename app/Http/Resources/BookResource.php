@@ -16,10 +16,10 @@ class BookResource extends JsonResource
             'level' => 'Level ' .  $this['level'],
             'cover_image' => asset($this['cover_image']),
             'pdf' => asset($this['pdf_path']),
+            'video' => asset($this['video']),
             'video_url' => $this['video_url'],
             'categories' => BookCategoryResource::collection($this['categories']),
             'images' => BookImageResource::collection($this['images']),
-            'video' => asset($this['video']),
         ];
     }
 }

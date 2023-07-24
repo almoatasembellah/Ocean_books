@@ -48,12 +48,15 @@ class BookController extends Controller
         }
 
         // Store the files
-        $pdfPath = $request->file('pdf')->store('book-pdfs', 'public');
+        if ($request->hasFile('pdf')) {
+            $pdfPath = $request->file('pdf')->store('book-pdfs', 'public');
+            $data['pdf_path'] = asset('storage/' . $pdfPath); // Get the full URL for the PDF
+        }
+
         $coverPath = $request->file('cover_image')->store('book-covers', 'public');
         $videoPath = $request->file('video')->store('book-videos', 'public');
-        $data['pdf_path'] = $pdfPath;
-        $data['video'] = $videoPath;
-        $data['cover_image'] = $coverPath;
+        $data['video'] = asset('storage/' . $videoPath); // Get the full URL for the video
+        $data['cover_image'] = asset('storage/' . $coverPath); // Get the full URL for the cover image
         $data['serial_code'] = \Str::uuid();
 
         $book = Book::create($data);
@@ -64,18 +67,19 @@ class BookController extends Controller
             'book_id' => $book->id
         ]);
 
-
         if ($request->has('images')) {
             foreach ($request->file('images') as $image) {
                 $imagePath = $image->store('book-images', 'public');
                 BookImage::create([
-                    'path' => $imagePath,
+                    'path' => asset('storage/' . $imagePath), // Get the full URL for the image
                     'book_id' => $book->id
                 ]);
             }
         }
+
         return self::sendResponse([], 'Book is created successfully');
     }
+
 
     public function show(string $id)
     {

@@ -9,11 +9,20 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
     use HandleApi;
+
+
+    public function register()
+    {
+        $this->renderable(function (CustomPostTooLargeException $e, $request) {
+            return $e->render($request);
+        });
+    }
 
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
@@ -46,6 +55,12 @@ class Handler extends ExceptionHandler
             return $this->sendError('QueryException', $e->getMessage());
         }
 
+        if ($e instanceof PostTooLargeException) {
+            return $this->sendError('PostTooLargeException','The request data is too large.');
+        }
+
+//          return parent::render($request, $e);
         return $this->sendError('Server Error', $e->getMessage());
+
     }
 }
