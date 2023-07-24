@@ -15,6 +15,7 @@ class Book extends Model
         'cover_image',
         'pdf_path',
         'video_url',
+        'video',
 //        'serial_code'
     ];
 

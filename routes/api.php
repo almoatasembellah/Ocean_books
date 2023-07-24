@@ -23,7 +23,7 @@ Route::post('admin/logout', [AdminController::class, 'adminLogout'])->middleware
 
 
 //User Routes
-Route::get('/get-all-book-header',[BookHeaderController::class, 'index']);
+Route::get('/get-all-book-header',[BookHeaderController::class, 'bookHeadersToUser']);
 Route::get('/get-all-categories',[CategoryController::class, 'index']);
 Route::get('/get-all-books',[BookController::class, 'getBooks']);
 

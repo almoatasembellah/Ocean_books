@@ -8,4 +8,12 @@ class BookHeader extends Model
 {
 
     protected $fillable = ['title'];
+
+    public function categories(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
 }
+
+

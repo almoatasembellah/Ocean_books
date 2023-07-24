@@ -18,7 +18,8 @@ class BookResource extends JsonResource
             'pdf' => asset($this['pdf_path']),
             'video_url' => $this['video_url'],
             'categories' => BookCategoryResource::collection($this['categories']),
-            'images' => BookImageResource::collection($this['images'])
+            'images' => BookImageResource::collection($this['images']),
+            'video' => asset($this['video']),
         ];
     }
 }

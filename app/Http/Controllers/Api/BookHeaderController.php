@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookHeaderRequest;
+use App\Http\Resources\BookHeaderResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Traits\HandleApi;
 use App\Models\BookHeader;
+use App\Models\Category;
 use Illuminate\Support\Facades\Request;
 
 class BookHeaderController extends Controller
@@ -15,6 +18,12 @@ class BookHeaderController extends Controller
     public function index()
     {
         return self::sendResponse(BookHeader::select(['id', 'title'])->get(), 'All Book headers are fetched');
+    }
+
+    public function bookHeadersToUser()
+    {
+        $bookHeaders = BookHeader::with('categories')->get();
+        return $this->sendResponse(BookHeaderResource::collection($bookHeaders), 'All Book headers are fetched for user');
     }
 
 

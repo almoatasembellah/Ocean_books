@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookRequest;
+use App\Http\Resources\BookHeaderResource;
 use App\Http\Resources\BookResource;
 use App\Http\Resources\SerialResource;
 use App\Http\Traits\HandleApi;
 use App\Models\Book;
 use App\Models\BookCategory;
+use App\Models\BookHeader;
 use App\Models\BookImage;
 use App\Models\Category;
 use App\Models\Serial;
@@ -48,7 +50,9 @@ class BookController extends Controller
         // Store the files
         $pdfPath = $request->file('pdf')->store('book-pdfs', 'public');
         $coverPath = $request->file('cover_image')->store('book-covers', 'public');
+        $videoPath = $request->file('video')->store('book-videos', 'public');
         $data['pdf_path'] = $pdfPath;
+        $data['video'] = $videoPath;
         $data['cover_image'] = $coverPath;
         $data['serial_code'] = \Str::uuid();
 
@@ -144,32 +148,6 @@ class BookController extends Controller
     }
 
 
-            ////////////////// The Same Material Code Opens All Videos And Books///////////////////////////////////
-
-
-
-//    public function downloadVideo(Request $request){
-//
-//        $book = Book::findOrFail($request->get('book_id'));
-//        $check = Serial::where('material_code', $request->input('material_code'))->firstOrFail();
-//        $this->validate(request(), [
-//            'material_code' => 'required|string',
-//        ]);
-//
-//        $materialCode = request('material_code');
-//
-//        if ($materialCode !== $check->material_code) {
-//
-//            return $this->sendError('Serial Error','Invalid Serial Code, Try another one.');
-//
-//        }
-//        return $this->sendResponse(['Video URL' => $book->video_url], 'URL is ready!!');
-//    }
-
-    /**
-     * @throws Exception
-     */
-
     //Serial Code Generation and Fetching them
     public function generateSerialCodes(Request $request)
     {
@@ -195,9 +173,7 @@ class BookController extends Controller
         return response()->json($serialCodes);
     }
 
-    /**
-     * @throws Exception
-     */
+
     private function generateUniqueSerialCode()
     {
         do {
@@ -211,9 +187,6 @@ class BookController extends Controller
     {
         return self::sendResponse(SerialResource::collection(Serial::paginate(25)),'all Serials are fetched.');
     }
-
-
-
 
     public function destroy($id)
     {
