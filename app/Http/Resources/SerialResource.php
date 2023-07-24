@@ -16,7 +16,7 @@ class SerialResource extends JsonResource
     {
         return [
             'Book_id' => $this['book_id'],
-            'Serial-Code' => $this['material_code'],
+            'Serial_Code' => $this['material_code'],
         ];
     }
 }
