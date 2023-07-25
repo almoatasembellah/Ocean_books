@@ -48,7 +48,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 //Serial Code Routes
     Route::post('generate-serial', [BookController::class, 'generateSerialCodes']);
     Route::get('generated', [BookController::class, 'generatedCodes']);
-    Route::get('get-generated-specific', [BookController::class, 'specificGeneratedCode']);
+    Route::post('get-generated-specific', [BookController::class, 'specificGeneratedCode']);
 
 });
 
