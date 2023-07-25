@@ -39,7 +39,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware('role:admin')->group(function () {
 
     Route::post('/book-header-delete/{id}', [BookHeaderController::class, 'destroy']);
-    Route::resource('book-headers', BookHeaderController::class);
+    Route::get('/book-headers', [BookHeaderController::class, 'index']);
+    Route::post('/book-headers', [BookHeaderController::class, 'store']);
+    Route::get('/book-headers/{id}', [BookHeaderController::class, 'show']);
+    Route::put('/book-headers/{id}', [BookHeaderController::class, 'update']);
     Route::resource('categories', CategoryController::class);
     Route::resource('books', BookController::class);
     });
