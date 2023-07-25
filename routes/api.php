@@ -19,13 +19,12 @@ use Illuminate\Support\Facades\Route;
 
 //ADMIN Auth
 Route::post('admin/login', [AdminController::class, 'login'])->name('login');
-Route::post('admin/logout', [AdminController::class, 'adminLogout'])->middleware('auth:sanctum')->name('logout');
 
 
 //User Routes
 Route::get('/get-all-book-header',[BookHeaderController::class, 'bookHeadersToUser']);
 Route::get('/get-all-categories',[CategoryController::class, 'index']);
-Route::get('/books', [BookController::class, 'getAllBooksForUsers']);
+Route::get('/get-all-books-for-users', [BookController::class, 'getAllBooksForUsers']);
 Route::get('/get-books-for-headers',[BookHeaderController::class, 'getBooksByHeaderID']);
 Route::get('/get-books-for-categories',[CategoryController::class, 'getBooksByCategoryId']);
 
@@ -50,3 +49,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('generated', [BookController::class, 'generatedCodes']);
 
 });
+
+
+Route::post('admin/logout', [AdminController::class, 'adminLogout'])->middleware('auth:sanctum')->name('logout');
