@@ -78,8 +78,15 @@ class BookController extends Controller
         return self::sendResponse(BookResource::make($book), 'Book is created successfully');
     }
 
-
+    //Admin Show
     public function show(string $id)
+    {
+        $book = Book::findOrFail($id);
+        return $this->sendResponse(BookResource::make($book), 'Book data is fetched successfully');
+    }
+
+    //User Show
+    public function showSpecificBook(string $id)
     {
         $book = Book::findOrFail($id);
         return $this->sendResponse(BookResource::make($book), 'Book data is fetched successfully');

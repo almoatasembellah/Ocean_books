@@ -27,6 +27,7 @@ Route::get('/get-all-categories',[CategoryController::class, 'index']);
 Route::get('/get-all-books-for-users', [BookController::class, 'getAllBooksForUsers']);
 Route::get('/get-books-for-headers',[BookHeaderController::class, 'getBooksByHeaderID']);
 Route::get('/get-books-for-categories',[CategoryController::class, 'getBooksByCategoryId']);
+Route::get('/get-book-for-id/{id}', [BookController::class, 'showSpecificBook']);
 
 //Download Routes
 Route::post('download-book', [BookController::class , 'downloadBook']);
