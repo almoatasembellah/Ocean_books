@@ -26,7 +26,6 @@ class BookController extends Controller
         if ($user->hasRole('admin')) {
             return self::sendResponse(BookResource::collection(Book::paginate(25)), 'All Books are fetched');
         }
-        return "not authorized";
     }
 
     //books for user
