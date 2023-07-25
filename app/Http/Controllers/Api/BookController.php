@@ -15,6 +15,8 @@ use App\Models\Category;
 use App\Models\Serial;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class BookController extends Controller
 {
@@ -78,14 +80,16 @@ class BookController extends Controller
         return self::sendResponse(BookResource::make($book), 'Book is created successfully');
     }
 
-    //Admin Show
+    //Admin get book by id
+
     public function show(string $id)
     {
         $book = Book::findOrFail($id);
         return $this->sendResponse(BookResource::make($book), 'Book data is fetched successfully');
     }
 
-    //User Show
+    //User Get book by id
+
     public function showSpecificBook(string $id)
     {
         $book = Book::findOrFail($id);
@@ -101,7 +105,7 @@ class BookController extends Controller
         return $this->sendResponse([], "Book updated successfully");
     }
 
-
+                                    //Download Book (User)
     public function downloadBook(Request $request)
     {
         $book = Book::findOrFail($request->get('book_id'));
@@ -157,7 +161,9 @@ class BookController extends Controller
     }
 
 
-    //Serial Code Generation and Fetching them
+                                        //Serial Code Generation and Fetching them
+
+
     public function generateSerialCodes(Request $request)
     {
         $bookId = $request->input('book_id');
@@ -177,7 +183,6 @@ class BookController extends Controller
 
         // Insert serial codes into the database
         Serial::insert($serialCodes);
-
         // Return the generated serial codes
         return response()->json($serialCodes);
     }
@@ -191,6 +196,28 @@ class BookController extends Controller
         } while (Serial::where('material_code', $serialCode)->exists());
         return $serialCode;
     }
+
+    public function specificGeneratedCode(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'book_id' => 'required|exists:books,id',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error', $validator->errors()->first(), 400);
+        }
+
+        $bookId = $request->input('book_id');
+        $serialCodes = Serial::where('book_id', $bookId)->get(['material_code']);
+
+        $response = [
+          'book_id' => $bookId,
+            'serial_codes' => $serialCodes
+        ];
+
+        return $this->sendResponse($response, 'Generated serial codes for the book');
+    }
+
 
     public function generatedCodes()
     {
