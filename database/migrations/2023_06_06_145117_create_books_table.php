@@ -16,6 +16,8 @@ return new class extends Migration {
             $table->string('pdf_path')->nullable();
             $table->string('video_url')->nullable();
             $table->string('video')->nullable();
+            $table->foreignId('book_header_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

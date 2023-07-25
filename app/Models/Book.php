@@ -16,6 +16,8 @@ class Book extends Model
         'pdf_path',
         'video_url',
         'video',
+        'book_header_id',
+        'category_id',
 //        'serial_code'
     ];
 
@@ -27,6 +29,11 @@ class Book extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class , 'book_categories' , 'book_id' , 'category_id');
+    }
+
+    public function headers(): BelongsToMany
+    {
+        return $this->belongsToMany(BookHeader::class , 'book_headers');
     }
 
     public function serialCodes()

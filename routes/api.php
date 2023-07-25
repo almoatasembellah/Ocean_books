@@ -25,7 +25,9 @@ Route::post('admin/logout', [AdminController::class, 'adminLogout'])->middleware
 //User Routes
 Route::get('/get-all-book-header',[BookHeaderController::class, 'bookHeadersToUser']);
 Route::get('/get-all-categories',[CategoryController::class, 'index']);
-Route::get('/get-all-books',[BookController::class, 'getBooks']);
+Route::get('/books', [BookController::class, 'getAllBooksForUsers']);
+Route::get('/get-books-for-headers',[BookHeaderController::class, 'getBooksByHeaderID']);
+Route::get('/get-books-for-categories',[CategoryController::class, 'getBooksByCategoryId']);
 
 //Download Routes
 Route::post('download-book', [BookController::class , 'downloadBook']);

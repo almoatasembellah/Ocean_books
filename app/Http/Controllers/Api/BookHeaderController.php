@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookHeaderRequest;
 use App\Http\Resources\BookHeaderResource;
-use App\Http\Resources\CategoryResource;
 use App\Http\Traits\HandleApi;
 use App\Models\BookHeader;
-use App\Models\Category;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class BookHeaderController extends Controller
 {
@@ -45,6 +43,28 @@ class BookHeaderController extends Controller
             $header->update($request->validated());
             return self::sendResponse([] , 'Header is updated successfully');
     }
+
+    public function getBooksByHeaderID(Request $request)
+    {
+        $bookHeaderId = $request->input('book_header_id');
+        $bookHeader = BookHeader::find($bookHeaderId);
+
+        if (!$bookHeader) {
+            return $this->sendError('Book Header not found.', [], 404);
+        }
+
+        // Get all categories and books related to the specified Book Header
+        $categories = $bookHeader->categories;
+        $books = $bookHeader->books;
+
+        return $this->sendResponse([
+            'book_header' => $bookHeader,
+            'categories' => $categories,
+            'books' => $books
+        ], 'Categories and Books for the specified Book Header are fetched successfully.');
+    }
+
+
 
     public function destroy($id)
     {

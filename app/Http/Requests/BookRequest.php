@@ -18,7 +18,9 @@ class BookRequest extends FormRequest
             'pdf' => 'required|mimes:pdf',
             'video_url' => 'url',
             'video' => 'mimes:mp4,mov,mkv',
-            'categories' => 'required|integer',
+//            'categories' => 'required|integer',
+            'category_id' => 'required|integer',
+            'book_header_id' => 'required|integer',
             'images' => ['bail','nullable' , 'array'],
             'images.*' => 'bail|nullable|image|mimes:png,gif,jpg,jpeg|max:2048',
         ];

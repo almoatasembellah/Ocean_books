@@ -5,18 +5,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookRequest;
-use App\Http\Resources\BookHeaderResource;
 use App\Http\Resources\BookResource;
 use App\Http\Resources\SerialResource;
 use App\Http\Traits\HandleApi;
 use App\Models\Book;
 use App\Models\BookCategory;
-use App\Models\BookHeader;
 use App\Models\BookImage;
 use App\Models\Category;
 use App\Models\Serial;
 use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -32,16 +29,17 @@ class BookController extends Controller
     }
 
     //books for user
-    public function getBooks()
+    public function getAllBooksForUsers()
     {
-        return self::sendResponse(BookResource::collection(Book::paginate(25)),'Books Are here for user');
+        $books = Book::paginate(25);
+        return BookResource::collection($books);
     }
 
     public function store(BookRequest $request)
     {
         $data = $request->validated();
 
-        $category = Category::find($data['categories']);
+        $category = Category::find($data['category_id']);
 
         if (!$category) {
             return self::sendError('Category not found.', [], 404);
@@ -59,8 +57,8 @@ class BookController extends Controller
         $data['cover_image'] = asset('storage/' . $coverPath); // Get the full URL for the cover image
         $data['serial_code'] = \Str::uuid();
 
-        $book = Book::create($data);
 
+        $book = Book::create($data);
         // Now, create the BookCategory record using the existing category_id
         BookCategory::create([
             'category_id' => $category->id,
@@ -77,7 +75,7 @@ class BookController extends Controller
             }
         }
 
-        return self::sendResponse([], 'Book is created successfully');
+        return self::sendResponse(BookResource::make($book), 'Book is created successfully');
     }
 
 

@@ -14,6 +14,11 @@ class BookHeader extends Model
         return $this->hasMany(Category::class);
     }
 
+    public function books(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Book::class);
+    }
+
 }
 
 

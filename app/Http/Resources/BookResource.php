@@ -20,6 +20,7 @@ class BookResource extends JsonResource
             'video_url' => $this['video_url'],
             'categories' => BookCategoryResource::collection($this['categories']),
             'images' => BookImageResource::collection($this['images']),
+            'book_header_id' => $this['book_header_id'],
         ];
     }
 }
