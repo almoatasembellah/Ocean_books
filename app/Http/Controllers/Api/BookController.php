@@ -16,6 +16,8 @@ use App\Models\Serial;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+
 
 
 class BookController extends Controller
@@ -50,7 +52,7 @@ class BookController extends Controller
         // Store the files
         if ($request->hasFile('pdf')) {
             $pdfPath = $request->file('pdf')->store('book-pdfs', 'public');
-            $data['pdf_path'] = asset('storage/' . $pdfPath); // Get the full URL for the PDF
+            $data['pdf_path'] = $pdfPath;
         }
 
         $coverPath = $request->file('cover_image')->store('book-covers', 'public');
@@ -123,6 +125,7 @@ class BookController extends Controller
             if (!User::where('phone', $phone)->exists()) {
                 User::create(request()->only(['name', 'email', 'phone', 'position']));
             }
+            return $this->initiateDownload($book);
         }
 
         else {
@@ -135,33 +138,65 @@ class BookController extends Controller
 
             if ($serialCode !== $check->material_code) {
 
-                return $this->sendError('Serial Error','Invalid Serial Code, Try another one.');
+                return $this->sendError('Serial Error', 'Invalid Serial Code, Try another one.');
 
             }
+            return $this->initiateDownload($book);
         }
-        return response()->download(storage_path('app/public/' . $book->pdf_path), $book->title . '.pdf');
     }
+
+    private function initiateDownload(Book $book)
+    {
+        $pdfPath = 'public/book-pdfs/' . basename($book->pdf_path);
+
+        if (!Storage::exists($pdfPath)) {
+            return $this->sendError('File not found', 'The requested PDF file does not exist.', 404);
+        }
+
+        return Storage::download($pdfPath, $book->title . '.pdf');
+    }
+
 
     public function downloadVideo(Request $request, $id)
     {
         $book = Book::findOrFail($id);
-        $check = Serial::where('material_code', $request->input('material_code'))->firstOrFail();
+        $isTeacher = $book->categories()->whereBookHeaderId(4)->exists();
 
+        if ($isTeacher) {
+            // If the user is a teacher, we don't need further validation, directly initiate the download
+            return $this->initiateVideoDownload($book);
+        }
+
+        // For regular users, validate and create the user if necessary
         $this->validate($request, [
             'material_code' => 'required|string',
         ]);
 
-        $materialCode = $request->input('material_code');
+        $check = Serial::where('material_code', $request->input('material_code'))->firstOrFail();
+        $serialCode = $request->input('material_code');
 
-        if ($materialCode !== $check->material_code) {
+        if ($serialCode !== $check->material_code) {
             return $this->sendError('Serial Error', 'Invalid Serial Code, please try again.');
         }
 
-        return $this->sendResponse(['video_url' => $book->video_url], 'URL is ready!');
+        // Initiate the download after validation and user creation
+        return $this->initiateVideoDownload($book);
+    }
+
+    private function initiateVideoDownload(Book $book)
+    {
+        $videoPath = 'public/book-videos/' . basename($book->video);
+
+        if (!Storage::exists($videoPath)) {
+            return $this->sendError('File not found', 'The requested video file does not exist.', 404);
+        }
+
+        return Storage::download($videoPath);
     }
 
 
-                                        //Serial Code Generation and Fetching them
+
+    //Serial Code Generation and Fetching them
 
 
     public function generateSerialCodes(Request $request)
